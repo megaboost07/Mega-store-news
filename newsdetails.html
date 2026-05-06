@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading... - mega-store.in</title>
+    <meta name="description" content="Read the latest news on mega-store.in">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a1a2e;
+            --accent: #e94560;
+            --accent-hover: #c73a51;
+            --text: #333;
+            --text-light: #666;
+            --text-lighter: #888;
+            --bg: #f5f5f5;
+            --card-bg: #fff;
+            --border: #e0e0e0;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        ul { list-style: none; }
+
+        .loading-overlay { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity .4s, visibility .4s; }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Header */
+        .top-bar { background: var(--primary); color: #fff; padding: 8px 0; font-size: 13px; }
+        .top-bar .container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .main-header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .logo { font-size: 26px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+        .desktop-nav { display: flex; gap: 4px; }
+        .desktop-nav a { padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text); transition: all .2s; }
+        .desktop-nav a:hover, .desktop-nav a.active { background: var(--accent); color: #fff; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .search-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s; }
+        .search-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .mobile-menu-btn { display: none; width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .mobile-menu-btn span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; }
+        .mobile-nav { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 2000; }
+        .mobile-nav.active { display: block; }
+        .mobile-nav-panel { position: absolute; right: 0; top: 0; bottom: 0; width: 280px; background: #fff; padding: 24px; transform: translateX(100%); transition: transform .3s; }
+        .mobile-nav.active .mobile-nav-panel { transform: translateX(0); }
+        .mobile-nav-close { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; font-size: 18px; margin-bottom: 20px; }
+        .mobile-nav a { display: block; padding: 12px 0; border-bottom: 1px solid var(--border); font-weight: 500; }
+
+        /* Breadcrumb */
+        .breadcrumb { max-width: 1200px; margin: 0 auto; padding: 16px; font-size: 13px; color: var(--text-lighter); }
+        .breadcrumb a { color: var(--accent); font-weight: 500; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Article */
+        .article-layout { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+        .article-main { min-width: 0; }
+        .article-header { margin-bottom: 24px; }
+        .article-category { display: inline-block; padding: 4px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #fff; background: var(--accent); margin-bottom: 16px; }
+        .article-title { font-size: 32px; font-weight: 800; color: var(--primary); line-height: 1.3; margin-bottom: 20px; }
+        .article-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 14px; color: var(--text-light); }
+        .article-meta span { display: flex; align-items: center; gap: 6px; }
+
+        .article-image { border-radius: 12px; overflow: hidden; margin-bottom: 28px; border: 1px solid var(--border); }
+        .article-image img { width: 100%; max-height: 500px; object-fit: cover; }
+        .article-body { background: transparent; border-radius: 0; padding: 16px 0; border: none; font-size: 17px; line-height: 1.8; color: #000000; }
+        .article-body p { margin-bottom: 16px; color: #000000; }
+        .article-body h2 { font-size: 22px; font-weight: 700; margin: 28px 0 14px; color: #000000; }
+        .article-body h3 { font-size: 18px; font-weight: 700; margin: 22px 0 10px; color: #000000; }
+        .article-body ul, .article-body ol { margin: 12px 0 16px 24px; }
+        .article-body li { margin-bottom: 6px; color: #000000; }
+        .article-body blockquote { border-left: 4px solid var(--accent); padding: 12px 20px; margin: 20px 0; background: #f5f5f5; border-radius: 0 8px 8px 0; font-style: italic; color: #000000; }
+        .article-body img { border-radius: 8px; margin: 16px 0; }
+
+        /* Share */
+        .share-bar { display: flex; align-items: center; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+        .share-label { font-size: 14px; font-weight: 600; color: var(--text-light); }
+        .share-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s; }
+        .share-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        /* Related */
+        .related-section { margin-top: 40px; }
+        .related-title { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .related-title::before { content: ''; width: 4px; height: 24px; background: var(--accent); border-radius: 2px; }
+        .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .related-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: .2s; }
+        .related-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+        .related-img { height: 140px; overflow: hidden; }
+        .related-img img { width: 100%; height: 100%; object-fit: cover; }
+        .related-body { padding: 14px; }
+        .related-card-title { font-size: 14px; font-weight: 700; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .related-meta { font-size: 12px; color: var(--text-lighter); margin-top: 6px; }
+
+        /* Sidebar */
+        .sidebar { min-width: 0; }
+        .sidebar-widget { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
+        .sidebar-widget-title { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .sidebar-widget-title::before { content: ''; width: 4px; height: 20px; background: var(--accent); border-radius: 2px; }
+        .popular-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .popular-item:last-child { border-bottom: none; }
+        .popular-thumb { width: 70px; height: 55px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .popular-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .popular-content { flex: 1; min-width: 0; }
+        .popular-title { font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .popular-meta { font-size: 11px; color: var(--text-lighter); margin-top: 3px; }
+
+        /* Footer */
+        .footer { background: var(--primary); color: #fff; margin-top: 60px; padding: 48px 0 0; }
+        .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+        .footer-brand .logo { color: #fff; margin-bottom: 12px; display: inline-block; }
+        .footer-brand p { font-size: 14px; color: #aaa; line-height: 1.7; }
+        .footer-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .footer-links a { display: block; font-size: 14px; color: #aaa; padding: 6px 0; transition: .2s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 40px; padding: 20px 0; text-align: center; font-size: 13px; color: #888; }
+
+        .fade-in { animation: fadeIn .5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        a.related-card, a.popular-item { text-decoration: none; color: inherit; }
+        a.related-card:hover, a.popular-item:hover { text-decoration: none; }
+
+        @media (max-width: 1024px) {
+            .article-layout { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .desktop-nav { display: none; }
+            .mobile-menu-btn { display: flex; }
+            .article-title { font-size: 24px; }
+            .related-grid { grid-template-columns: 1fr; }
+            .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+            .article-body { padding: 16px 0; font-size: 16px; color: #000000; background: transparent; border: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loader"><div class="loader"></div></div>
+
+    <div class="top-bar">
+        <div class="container">
+            <div style="display:flex;align-items:center;gap:20px">
+                <div style="display:flex;align-items:center;gap:6px;font-weight:600;color:#ff4444">
+                    <span style="width:8px;height:8px;background:#ff4444;border-radius:50%;animation:pulse 1.5s infinite"></span> LIVE
+                </div>
+                <span style="color:#ccc" id="currentDate"></span>
+            </div>
+            <div>Breaking News & Updates 24/7</div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">mega-store<span>.in</span></a>
+            <nav class="desktop-nav">
+                <a href="index.html">Home</a>
+                <a href="category.html?category=politics">Politics</a>
+                <a href="category.html?category=technology">Technology</a>
+                <a href="category.html?category=sports">Sports</a>
+                <a href="category.html?category=entertainment">Entertainment</a>
+                <a href="category.html?category=business">Business</a>
+                <a href="category.html?category=world">World</a>
+                <a href="category.html?category=health">Health</a>
+            </nav>
+            <div class="header-right">
+                <button class="search-btn" onclick="location.href='search.html'" title="Search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </button>
+                <button class="mobile-menu-btn" onclick="document.getElementById('mobileNav').classList.add('active')"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-nav" id="mobileNav" onclick="if(event.target===this)this.classList.remove('active')">
+        <div class="mobile-nav-panel">
+            <button class="mobile-nav-close" onclick="document.getElementById('mobileNav').classList.remove('active')">&times;</button>
+            <a href="index.html">Home</a>
+            <a href="category.html?category=politics">Politics</a>
+            <a href="category.html?category=technology">Technology</a>
+            <a href="category.html?category=sports">Sports</a>
+            <a href="category.html?category=entertainment">Entertainment</a>
+            <a href="category.html?category=business">Business</a>
+            <a href="category.html?category=world">World</a>
+            <a href="category.html?category=health">Health</a>
+            <a href="search.html">Search</a>
+        </div>
+    </div>
+
+    <div class="breadcrumb" id="breadcrumb">
+        <a href="index.html">Home</a> / <span>News</span>
+    </div>
+
+    <div class="article-layout">
+        <article class="article-main fade-in" id="articleContent">
+            <div class="article-header">
+                <span class="article-category" id="articleCategory">News</span>
+                <h1 class="article-title" id="articleTitle">Loading...</h1>
+                <div class="article-meta">
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> <span id="articleDate"></span></span>
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span id="articleViews">0 views</span></span>
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> <span id="articleCategory2">News</span></span>
+                </div>
+            </div>
+            <div class="article-image" id="articleImage">
+                <img src="" alt="" id="articleImg">
+            </div>
+            <div class="article-body" id="articleBody">
+                <p>Loading article content...</p>
+            </div>
+            <div class="share-bar">
+                <span class="share-label">Share:</span>
+                <button class="share-btn" onclick="shareFacebook()" title="Facebook">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </button>
+                <button class="share-btn" onclick="shareTwitter()" title="Twitter">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53A4.48 4.48 0 0 0 12 8v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+                </button>
+                <button class="share-btn" onclick="shareWhatsApp()" title="WhatsApp">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </button>
+                <button class="share-btn" onclick="copyLink()" title="Copy Link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </button>
+            </div>
+
+            <section class="related-section">
+                <h2 class="related-title">Related News</h2>
+                <div class="related-grid" id="relatedGrid"><div class="empty-state">Loading related news...</div></div>
+            </section>
+        </article>
+
+        <aside class="sidebar">
+            <div class="sidebar-widget">
+                <h3 class="sidebar-widget-title">Most Popular</h3>
+                <div id="popularList"><div style="padding:20px;text-align:center;color:#888">Loading...</div></div>
+            </div>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">mega-store<span>.in</span></a>
+                <p>Your trusted source for breaking news, in-depth analysis, and stories that matter from around the globe.</p>
+            </div>
+            <div>
+                <h4 class="footer-title">Categories</h4>
+                <div class="footer-links">
+                    <a href="category.html?category=politics">Politics</a>
+                    <a href="category.html?category=technology">Technology</a>
+                    <a href="category.html?category=sports">Sports</a>
+                    <a href="category.html?category=entertainment">Entertainment</a>
+                    <a href="category.html?category=business">Business</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-title">Quick Links</h4>
+                <div class="footer-links">
+                    <a href="About Us.html">About Us</a>
+                    <a href="Contact Us.html">Contact Us</a>
+                    <a href="Privacy Policy.html">Privacy Policy</a>
+                    <a href="Terms and Conditions.html">Terms & Conditions</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-title">Legal</h4>
+                <div class="footer-links">
+                    <a href="Cookies Policy.html">Cookies Policy</a>
+                    <a href="Disclaimer.html">Disclaimer</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">&copy; <span id="year"></span> mega-store.in. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getDatabase, ref, get, update } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQnUabSu6WGbq1te-hBEAYPZdOO93_Mfk",
+            authDomain: "mega-store-2025.firebaseapp.com",
+            databaseURL: "https://mega-store-2025-default-rtdb.firebaseio.com",
+            projectId: "mega-store-2025",
+            storageBucket: "mega-store-2025.firebasestorage.app",
+            messagingSenderId: "190838364165",
+            appId: "1:190838364165:web:43a969b7b852777061e46c",
+            measurementId: "G-CZR2N1HF9K"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        const categories = {
+            politics: 'Politics', technology: 'Technology', sports: 'Sports',
+            entertainment: 'Entertainment', business: 'Business', world: 'World', health: 'Health', science: 'Science'
+        };
+        
+        const catColors = {
+            politics: '#e94560', technology: '#2563eb', sports: '#16a34a',
+            entertainment: '#9333ea', business: '#ea580c', world: '#0d9488', health: '#db2777', science: '#4f46e5'
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const newsId = urlParams.get('id');
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        if (!newsId) {
+            document.getElementById('articleTitle').textContent = 'News not found';
+            document.getElementById('loader').classList.add('hidden');
+        }
+
+        function fetchNews() {
+            try {
+            const newsRef = ref(db, 'news');
+            // Use get() for one-time fetch instead of onValue() to prevent hanging
+            get(newsRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (!data || !data[newsId]) {
+                    document.getElementById('articleTitle').textContent = 'News not found';
+                    document.getElementById('loader').classList.add('hidden');
+                    return;
+                }
+                
+                const news = data[newsId];
+                const allNews = Object.entries(data).map(([id, item]) => ({ id, ...item }));
+                
+                // Update SEO
+                document.title = `${news.title} - mega-store.in`;
+                document.querySelector('meta[name="description"]').setAttribute('content', news.description ? news.description.substring(0, 160) : `Read ${news.title} on mega-store.in`);
+                
+                // Update article
+                document.getElementById('articleCategory').textContent = categories[news.category] || news.category || 'News';
+                document.getElementById('articleCategory').style.background = catColors[news.category] || '#e94560';
+                document.getElementById('articleTitle').textContent = news.title;
+                document.getElementById('articleDate').textContent = formatDate(news.timestamp);
+                document.getElementById('articleViews').textContent = `${news.views || 0} views`;
+                document.getElementById('articleCategory2').textContent = categories[news.category] || news.category || 'News';
+                document.getElementById('articleImg').src = news.imageUrl || '';
+                document.getElementById('articleImg').alt = news.title;
+                document.getElementById('articleBody').innerHTML = formatDescription(news.description || '');
+                document.getElementById('breadcrumb').innerHTML = `<a href="index.html">Home</a> / <a href="category.html?category=${news.category}">${categories[news.category] || news.category}</a> / <span>${news.title.substring(0, 50)}...</span>`;
+                
+                // Increment views
+                update(ref(db, `news/${newsId}`), { views: (news.views || 0) + 1 });
+                
+                // Related news
+                const related = allNews.filter(n => n.id !== newsId && n.category === news.category).slice(0, 12);
+                if (related.length < 12) {
+                    const more = allNews.filter(n => n.id !== newsId && n.category !== news.category).slice(0, 12 - related.length);
+                    related.push(...more);
+                }
+                renderRelated(related.slice(0, 14));
+                
+                // Popular sidebar
+                const popular = allNews.filter(n => n.id !== newsId).slice(0, 5);
+                renderPopular(popular);
+                
+                document.getElementById('loader').classList.add('hidden');
+            }).catch((error) => {
+                console.error('Firebase get() error:', error);
+                document.getElementById('articleTitle').textContent = 'Error loading news';
+                document.getElementById('articleBody').innerHTML = '<p style="color:#000000">Unable to load article. Please check your connection and try again.</p>';
+                document.getElementById('loader').classList.add('hidden');
+            });
+            } catch (err) {
+                console.error('Script error:', err);
+                document.getElementById('articleTitle').textContent = 'Error loading news';
+                document.getElementById('articleBody').innerHTML = '<p style="color:#000000">Something went wrong. Please refresh the page.</p>';
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
+
+        function renderRelated(newsList) {
+            const grid = document.getElementById('relatedGrid');
+            if (!newsList.length) { grid.innerHTML = '<div class="empty-state">No related news</div>'; return; }
+            grid.innerHTML = newsList.map(n => `
+                <a href="newsdetails.html?id=${n.id}" class="related-card fade-in" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="related-img">
+                        <img src="${n.imageUrl || ''}" alt="${escapeHtml(n.title)}" loading="lazy">
+                    </div>
+                    <div class="related-body">
+                        <div class="related-card-title">${escapeHtml(n.title)}</div>
+                        <div class="related-meta">${formatDate(n.timestamp)}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function renderPopular(newsList) {
+            const list = document.getElementById('popularList');
+            if (!newsList.length) { list.innerHTML = '<div style="padding:20px;text-align:center;color:#888">No popular news</div>'; return; }
+            list.innerHTML = newsList.map(n => `
+                <a href="newsdetails.html?id=${n.id}" class="popular-item" style="text-decoration:none;color:inherit;display:flex;">
+                    <div class="popular-thumb"><img src="${n.imageUrl || ''}" alt="" loading="lazy"></div>
+                    <div class="popular-content">
+                        <div class="popular-title">${escapeHtml(n.title)}</div>
+                        <div class="popular-meta">${formatDate(n.timestamp)}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function formatDescription(desc) {
+            // Convert plain text to HTML paragraphs
+            if (!desc) return '<p>No content available.</p>';
+            // Check if already HTML
+            if (desc.trim().startsWith('<')) return desc;
+            const paragraphs = desc.split(/\n\n+/).filter(p => p.trim());
+            return paragraphs.map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`).join('');
+        }
+
+        function escapeHtml(t) { return (t || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+        function formatDate(ts) { if (!ts) return ''; const d = new Date(Number(ts)); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+
+        window.shareFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}`, '_blank');
+        window.shareTwitter = () => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(document.title)}`, '_blank');
+        window.shareWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent(document.title + ' ' + location.href)}`, '_blank');
+        window.copyLink = () => { navigator.clipboard.writeText(location.href).then(() => alert('Link copied!')); };
+
+        // Safety timeout: hide loader after 8 seconds max so page never gets stuck
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && !loader.classList.contains('hidden')) {
+                loader.classList.add('hidden');
+                const title = document.getElementById('articleTitle').textContent;
+                if (title === 'Loading...') {
+                    document.getElementById('articleTitle').textContent = 'News not found';
+                    document.getElementById('articleBody').innerHTML = '<p style="color:#000000">Unable to load article. Please check your internet connection.</p>';
+                }
+            }
+        }, 8000);
+
+        fetchNews();
+    </script>
+</body>
+</html>

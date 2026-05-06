@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category - mega-store.in</title>
+    <meta name="description" content="Browse news by category on mega-store.in. Find latest updates in your area of interest.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a1a2e;
+            --accent: #e94560;
+            --accent-hover: #c73a51;
+            --text: #333;
+            --text-light: #666;
+            --text-lighter: #888;
+            --bg: #f5f5f5;
+            --card-bg: #fff;
+            --border: #e0e0e0;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        ul { list-style: none; }
+
+        .loading-overlay { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity .4s, visibility .4s; }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Header */
+        .top-bar { background: var(--primary); color: #fff; padding: 8px 0; font-size: 13px; }
+        .top-bar .container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .main-header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+        .logo { font-size: 26px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+        .desktop-nav { display: flex; gap: 4px; }
+        .desktop-nav a { padding: 8px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--text); transition: all .2s; }
+        .desktop-nav a:hover, .desktop-nav a.active { background: var(--accent); color: #fff; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .search-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s; }
+        .search-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .mobile-menu-btn { display: none; width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .mobile-menu-btn span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; }
+        .mobile-nav { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 2000; }
+        .mobile-nav.active { display: block; }
+        .mobile-nav-panel { position: absolute; right: 0; top: 0; bottom: 0; width: 280px; background: #fff; padding: 24px; transform: translateX(100%); transition: transform .3s; }
+        .mobile-nav.active .mobile-nav-panel { transform: translateX(0); }
+        .mobile-nav-close { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; font-size: 18px; margin-bottom: 20px; }
+        .mobile-nav a { display: block; padding: 12px 0; border-bottom: 1px solid var(--border); font-weight: 500; }
+
+        /* Category Header */
+        .cat-header { background: #fff; border-bottom: 1px solid var(--border); padding: 40px 0; }
+        .cat-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+        .cat-breadcrumb { font-size: 13px; color: var(--text-lighter); margin-bottom: 12px; }
+        .cat-breadcrumb a { color: var(--accent); font-weight: 500; }
+        .cat-title { font-size: 32px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        .cat-desc { font-size: 15px; color: var(--text-light); }
+
+        /* Category Filters */
+        .cat-filters { max-width: 1200px; margin: 0 auto; padding: 20px 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .cat-filter { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); background: #fff; cursor: pointer; transition: .2s; color: var(--text); }
+        .cat-filter:hover, .cat-filter.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* Results */
+        .results-section { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; }
+        .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .result-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); transition: transform .2s, box-shadow .2s; cursor: pointer; }
+        .result-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.12); }
+        .result-img { position: relative; height: 200px; overflow: hidden; }
+        .result-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+        .result-card:hover .result-img img { transform: scale(1.05); }
+        .result-category { position: absolute; top: 12px; left: 12px; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #fff; background: var(--accent); }
+        .result-body { padding: 16px; }
+        .result-title { font-size: 15px; font-weight: 700; line-height: 1.4; color: var(--primary); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .result-desc { font-size: 13px; color: var(--text-light); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+        .result-meta { font-size: 12px; color: var(--text-lighter); }
+
+        .no-results { text-align: center; padding: 80px 20px; grid-column: 1 / -1; }
+        .no-results h3 { font-size: 22px; color: var(--primary); margin-bottom: 8px; }
+        .no-results p { color: var(--text-light); }
+
+        .load-more { text-align: center; margin: 32px 0; }
+        .load-more-btn { padding: 12px 40px; border: 2px solid var(--accent); background: none; color: var(--accent); font-weight: 700; font-size: 14px; border-radius: 8px; cursor: pointer; transition: .2s; }
+        .load-more-btn:hover { background: var(--accent); color: #fff; }
+        .load-more-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* Footer */
+        .footer { background: var(--primary); color: #fff; margin-top: 60px; padding: 48px 0 0; }
+        .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+        .footer-brand .logo { color: #fff; margin-bottom: 12px; display: inline-block; }
+        .footer-brand p { font-size: 14px; color: #aaa; line-height: 1.7; }
+        .footer-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .footer-links a { display: block; font-size: 14px; color: #aaa; padding: 6px 0; transition: .2s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 40px; padding: 20px 0; text-align: center; font-size: 13px; color: #888; }
+
+        .fade-in { animation: fadeIn .4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 768px) {
+            .desktop-nav { display: none; }
+            .mobile-menu-btn { display: flex; }
+            .results-grid { grid-template-columns: 1fr; }
+            .cat-title { font-size: 24px; }
+            .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loader"><div class="loader"></div></div>
+
+    <div class="top-bar">
+        <div class="container">
+            <div style="display:flex;align-items:center;gap:20px">
+                <div style="display:flex;align-items:center;gap:6px;font-weight:600;color:#ff4444">
+                    <span style="width:8px;height:8px;background:#ff4444;border-radius:50%;animation:pulse 1.5s infinite"></span> LIVE
+                </div>
+            </div>
+            <div>Breaking News & Updates 24/7</div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">mega-store<span>.in</span></a>
+            <nav class="desktop-nav">
+                <a href="index.html">Home</a>
+                <a href="category.html?category=politics">Politics</a>
+                <a href="category.html?category=technology">Technology</a>
+                <a href="category.html?category=sports">Sports</a>
+                <a href="category.html?category=entertainment">Entertainment</a>
+                <a href="category.html?category=business">Business</a>
+                <a href="category.html?category=world">World</a>
+                <a href="category.html?category=health">Health</a>
+            </nav>
+            <div class="header-right">
+                <button class="search-btn" onclick="location.href='search.html'" title="Search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </button>
+                <button class="mobile-menu-btn" onclick="document.getElementById('mobileNav').classList.add('active')"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-nav" id="mobileNav" onclick="if(event.target===this)this.classList.remove('active')">
+        <div class="mobile-nav-panel">
+            <button class="mobile-nav-close" onclick="document.getElementById('mobileNav').classList.remove('active')">&times;</button>
+            <a href="index.html">Home</a>
+            <a href="category.html?category=politics">Politics</a>
+            <a href="category.html?category=technology">Technology</a>
+            <a href="category.html?category=sports">Sports</a>
+            <a href="category.html?category=entertainment">Entertainment</a>
+            <a href="category.html?category=business">Business</a>
+            <a href="category.html?category=world">World</a>
+            <a href="category.html?category=health">Health</a>
+            <a href="search.html">Search</a>
+        </div>
+    </div>
+
+    <section class="cat-header">
+        <div class="cat-header-inner">
+            <div class="cat-breadcrumb"><a href="index.html">Home</a> / Category</div>
+            <h1 class="cat-title" id="catTitle">All News</h1>
+            <p class="cat-desc" id="catDesc">Browse all the latest news and updates</p>
+        </div>
+    </section>
+
+    <div class="cat-filters" id="catFilters"></div>
+
+    <section class="results-section">
+        <div class="results-grid" id="resultsGrid"></div>
+        <div class="load-more" id="loadMoreWrap" style="display:none">
+            <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Load More</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <a href="index.html" class="logo">mega-store<span>.in</span></a>
+                <p>Your trusted source for breaking news, in-depth analysis, and stories that matter.</p>
+            </div>
+            <div>
+                <h4 class="footer-title">Categories</h4>
+                <div class="footer-links">
+                    <a href="category.html?category=politics">Politics</a>
+                    <a href="category.html?category=technology">Technology</a>
+                    <a href="category.html?category=sports">Sports</a>
+                    <a href="category.html?category=entertainment">Entertainment</a>
+                    <a href="category.html?category=business">Business</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-title">Quick Links</h4>
+                <div class="footer-links">
+                    <a href="About Us.html">About Us</a>
+                    <a href="Contact Us.html">Contact Us</a>
+                    <a href="Privacy Policy.html">Privacy Policy</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="footer-title">Legal</h4>
+                <div class="footer-links">
+                    <a href="Terms and Conditions.html">Terms & Conditions</a>
+                    <a href="Cookies Policy.html">Cookies Policy</a>
+                    <a href="Disclaimer.html">Disclaimer</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">&copy; <span id="year"></span> mega-store.in. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQnUabSu6WGbq1te-hBEAYPZdOO93_Mfk",
+            authDomain: "mega-store-2025.firebaseapp.com",
+            databaseURL: "https://mega-store-2025-default-rtdb.firebaseio.com",
+            projectId: "mega-store-2025",
+            storageBucket: "mega-store-2025.firebasestorage.app",
+            messagingSenderId: "190838364165",
+            appId: "1:190838364165:web:43a969b7b852777061e46c",
+            measurementId: "G-CZR2N1HF9K"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const categoryData = {
+            politics: { label: 'Politics', desc: 'Latest political news, elections, policy updates and government affairs.' },
+            technology: { label: 'Technology', desc: 'Tech news, gadgets, software updates, AI, and innovation stories.' },
+            sports: { label: 'Sports', desc: 'Sports coverage, match results, player transfers and tournament updates.' },
+            entertainment: { label: 'Entertainment', desc: 'Celebrity news, movies, music, TV shows and pop culture updates.' },
+            business: { label: 'Business', desc: 'Market updates, economy, startups, finance and corporate news.' },
+            world: { label: 'World', desc: 'Global news, international affairs and stories from around the world.' },
+            health: { label: 'Health', desc: 'Health tips, medical breakthroughs, fitness and wellness news.' },
+            science: { label: 'Science', desc: 'Scientific discoveries, space exploration, research and innovation.' },
+            all: { label: 'All News', desc: 'Browse all the latest news and updates from every category.' }
+        };
+
+        const catColors = {
+            politics: '#e94560', technology: '#2563eb', sports: '#16a34a',
+            entertainment: '#9333ea', business: '#ea580c', world: '#0d9488',
+            health: '#db2777', science: '#4f46e5', all: '#1a1a2e'
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentCategory = urlParams.get('category') || 'all';
+        
+        let allNews = [];
+        let filteredNews = [];
+        let currentPage = 0;
+        const PAGE_SIZE = 9;
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        function initCategory() {
+            const info = categoryData[currentCategory] || categoryData.all;
+            document.getElementById('catTitle').textContent = info.label;
+            document.getElementById('catDesc').textContent = info.desc;
+            document.title = `${info.label} News - mega-store.in`;
+            document.querySelector('meta[name="description"]').setAttribute('content', info.desc);
+            
+            // Build filters
+            const filtersEl = document.getElementById('catFilters');
+            const filterItems = [
+                { key: 'all', label: 'All News' },
+                { key: 'politics', label: 'Politics' },
+                { key: 'technology', label: 'Technology' },
+                { key: 'sports', label: 'Sports' },
+                { key: 'entertainment', label: 'Entertainment' },
+                { key: 'business', label: 'Business' },
+                { key: 'world', label: 'World' },
+                { key: 'health', label: 'Health' }
+            ];
+            
+            filtersEl.innerHTML = filterItems.map(f => 
+                `<button class="cat-filter ${f.key === currentCategory ? 'active' : ''}" onclick="switchCategory('${f.key}')">${f.label}</button>`
+            ).join('');
+        }
+
+        window.switchCategory = function(cat) {
+            currentCategory = cat;
+            currentPage = 0;
+            const info = categoryData[cat] || categoryData.all;
+            document.getElementById('catTitle').textContent = info.label;
+            document.getElementById('catDesc').textContent = info.desc;
+            document.title = `${info.label} News - mega-store.in`;
+            
+            // Update active filter
+            document.querySelectorAll('.cat-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === info.label);
+            });
+            
+            // Update URL
+            const newUrl = cat === 'all' ? 'category.html' : `category.html?category=${cat}`;
+            window.history.replaceState({}, '', newUrl);
+            
+            filterAndRender();
+        };
+
+        function fetchNews() {
+            const newsRef = ref(db, 'news');
+            onValue(newsRef, (snapshot) => {
+                const data = snapshot.val();
+                allNews = data ? Object.entries(data).map(([id, item]) => ({ id, ...item })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)) : [];
+                document.getElementById('loader').classList.add('hidden');
+                filterAndRender();
+            });
+        }
+
+        function filterAndRender() {
+            if (currentCategory === 'all') {
+                filteredNews = [...allNews];
+            } else {
+                filteredNews = allNews.filter(n => n.category === currentCategory);
+            }
+            renderResults();
+        }
+
+        function renderResults() {
+            const grid = document.getElementById('resultsGrid');
+            const end = (currentPage + 1) * PAGE_SIZE;
+            const toShow = filteredNews.slice(0, end);
+            
+            if (!toShow.length) {
+                grid.innerHTML = `<div class="no-results"><h3>No news found</h3><p>Check back later for updates in this category.</p></div>`;
+                document.getElementById('loadMoreWrap').style.display = 'none';
+                return;
+            }
+            
+            grid.innerHTML = toShow.map(n => `
+                <div class="result-card fade-in" onclick="location.href='newsdetails.html?id=${n.id}'">
+                    <div class="result-img">
+                        <img src="${n.imageUrl || ''}" alt="${escapeHtml(n.title)}" loading="lazy">
+                        <span class="result-category" style="background:${catColors[n.category] || '#e94560'}">${categoryData[n.category]?.label || n.category}</span>
+                    </div>
+                    <div class="result-body">
+                        <h3 class="result-title">${escapeHtml(n.title)}</h3>
+                        <p class="result-desc">${escapeHtml((n.description || '').substring(0, 150))}...</p>
+                        <div class="result-meta">${formatDate(n.timestamp)}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('loadMoreWrap').style.display = end >= filteredNews.length ? 'none' : 'block';
+        }
+
+        window.loadMore = function() {
+            currentPage++;
+            renderResults();
+        };
+
+        function escapeHtml(t) { return (t || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+        function formatDate(ts) { if (!ts) return ''; const d = new Date(Number(ts)); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+
+        initCategory();
+        fetchNews();
+    </script>
+</body>
+</html>
