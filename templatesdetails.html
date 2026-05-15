@@ -50,7 +50,7 @@
         .toast.error { background: var(--error); }
         .toast.success { background: var(--highlight); color: var(--text-primary); }
 
-        .mobile-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; }
+        .mobile-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; color: var(--text-primary); }
         .menu-btn, .back-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         .logo { font-weight: 800; font-size: 18px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-primary); }
 
@@ -261,13 +261,13 @@
                 </div>
                 <div class="info-rating" id="starRating"></div>
                 <div class="action-btns">
-                    <a id="downloadBtn" href="#" class="btn btn-primary" target="_blank">
+                    <a id="downloadBtn" href="#" class="btn btn-primary" target="_blank" onclick="return trackDownload(event)">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>Download
                     </a>
                     <a id="reviewBtn" href="#" class="btn btn-outline" target="_blank" style="display:none;">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>Review
                     </a>
-                    <button class="btn btn-like" id="likeBtn" onclick="toggleLike()">
+                    <button type="button" class="btn btn-like" id="likeBtn" onclick="toggleLike()">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>Like
                     </button>
                 </div>
@@ -298,7 +298,7 @@
             <div class="comment-form" id="commentForm">
                 <div class="rating-input" id="ratingInput"></div>
                 <textarea class="comment-textarea" id="commentText" placeholder="Write your review..."></textarea>
-                <button class="btn btn-primary" onclick="submitComment()">Submit Review</button>
+                <button type="button" class="btn btn-primary" onclick="submitComment()">Submit Review</button>
             </div>
             <div class="comment-list" id="commentList"></div>
         </div>
@@ -432,6 +432,35 @@
         function extractYouTubeId(url) {
             const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
             return match ? match[1] : null;
+        }
+
+        // Track download
+        function trackDownload(e) {
+            if (!currentTemplate) return true;
+            const user = getUser();
+            if (!user) {
+                if (e) e.preventDefault();
+                showToast('Please login to download', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1000);
+                return false;
+            }
+            const email = user.email;
+            db.ref('templates/' + templateId + '/downloadedBy').once('value').then(snap => {
+                const downloaders = snap.val() || [];
+                if (!downloaders.includes(email)) {
+                    downloaders.push(email);
+                    const newCount = (currentTemplate.downloads || 0) + 1;
+                    db.ref('templates/' + templateId).update({ downloads: newCount, downloadedBy: downloaders });
+                    currentTemplate.downloads = newCount;
+                    document.getElementById('downloadsCount').textContent = formatCount(newCount) + ' downloads';
+                    showToast('Download counted!', 'success');
+                } else {
+                    showToast('Already downloaded from this account', 'info');
+                }
+            }).catch(err => {
+                console.error('Download track error:', err);
+            });
+            return true;
         }
 
         // Track view
