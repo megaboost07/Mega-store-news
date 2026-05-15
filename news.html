@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>News — Mega Store</title>
-    <meta name="description" content="Read the latest news and updates from Mega Store.">
+    <title>News & Updates — Mega Store</title>
+    <meta name="description" content="Stay updated with the latest template releases and platform news from Mega Store.">
     <meta name="theme-color" content="#000000">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,16 +23,18 @@
 
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .skeleton { background: linear-gradient(90deg, var(--border) 25%, var(--bg-card) 50%, var(--border) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius); }
+        .skeleton-img { aspect-ratio: 3/2; width: 100%; }
+        .skeleton-text { height: 14px; margin: 8px 0; width: 60%; }
 
         .toast-container { position: fixed; top: 16px; right: 16px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
         .toast { background: var(--text-primary); color: var(--bg); padding: 12px 20px; border-radius: var(--radius); font-size: 13px; font-weight: 500; animation: slideInRight 0.3s ease; max-width: 320px; }
 
         .mobile-header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; }
-        .menu-btn, .back-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .menu-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         .logo { font-weight: 800; font-size: 18px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-primary); }
 
         .desktop-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-width); background: var(--bg-card); border-right: 1px solid var(--border); z-index: 1000; display: none; flex-direction: column; overflow-y: auto; }
@@ -65,35 +67,35 @@
         .bottom-nav-item svg { width: 20px; height: 20px; }
 
         .main-content { padding-top: var(--header-height); padding-bottom: calc(var(--bottom-nav-height) + 16px); }
-        .content-wrapper { max-width: 800px; margin: 0 auto; padding: 0 16px; }
+        .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
 
-        .section-header { display: flex; align-items: center; gap: 12px; margin: 40px 0 20px; }
-        .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-secondary); white-space: nowrap; }
-        .section-line { flex: 1; height: 1px; background: var(--border); }
+        .page-header { padding: 40px 0 32px; text-align: center; }
+        .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 8px; animation: fadeInUp 0.5s ease; }
+        .page-subtitle { font-size: 14px; color: var(--text-secondary); animation: fadeInUp 0.5s ease 0.1s both; }
 
-        .news-featured-img { width: 100%; aspect-ratio: 3/2; overflow: hidden; border-radius: var(--radius); background: var(--bg-card); margin-bottom: 24px; }
-        .news-featured-img img { width: 100%; height: 100%; object-fit: cover; }
-        .news-title { font-size: 28px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 12px; }
-        .news-meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 24px; font-weight: 500; }
-        .news-content { font-size: 15px; line-height: 1.8; color: var(--text-secondary); }
-        .news-content a { color: var(--text-primary); text-decoration: underline; }
-        .news-content p { margin-bottom: 16px; }
-        .news-content h2 { font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 32px 0 16px; }
-        .news-content h3 { font-size: 17px; font-weight: 600; color: var(--text-primary); margin: 24px 0 12px; }
-
-        .news-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-bottom: 40px; }
-        .news-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+        .news-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .news-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; animation: fadeInUp 0.4s ease both; display: flex; flex-direction: column; }
         .news-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
-        .news-card-img { aspect-ratio: 3/2; overflow: hidden; }
-        .news-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
-        .news-card:hover .news-card-img img { transform: scale(1.05); }
-        .news-card-body { padding: 12px; }
-        .news-card-title { font-size: 14px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-card:nth-child(1) { animation-delay: 0s; }
+        .news-card:nth-child(2) { animation-delay: 0.08s; }
+        .news-card:nth-child(3) { animation-delay: 0.16s; }
+        .news-card:nth-child(4) { animation-delay: 0.24s; }
+        .news-card:nth-child(5) { animation-delay: 0.32s; }
+        .news-card:nth-child(6) { animation-delay: 0.40s; }
+        .news-img-wrap { aspect-ratio: 3/2; overflow: hidden; }
+        .news-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+        .news-card:hover .news-img-wrap img { transform: scale(1.05); }
+        .news-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+        .news-title { font-size: 16px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 12px; flex: 1; }
+        .news-date { font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.05em; }
 
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .empty-state svg { width: 64px; height: 64px; margin: 0 auto 16px; opacity: 0.4; }
+        .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
 
-        @media (min-width: 768px) { .news-title { font-size: 36px; } .news-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
-        @media (min-width: 1024px) { .mobile-header { display: none; } .bottom-nav { display: none; } .desktop-sidebar { display: flex; } .main-content { padding-top: 0; padding-bottom: 0; padding-left: var(--sidebar-width); } .content-wrapper { padding: 0 32px; } .news-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; padding: 0 32px 40px; } .news-featured-img { margin-top: 32px; } }
+        @media (min-width: 768px) { .news-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; } }
+        @media (min-width: 1024px) { .mobile-header { display: none; } .bottom-nav { display: none; } .desktop-sidebar { display: flex; } .main-content { padding-top: 0; padding-bottom: 0; padding-left: var(--sidebar-width); } .content-wrapper { padding: 0 32px; } .news-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
     </style>
 </head>
@@ -116,7 +118,6 @@
     </aside>
 
     <header class="mobile-header">
-        <a href="news.html" class="back-btn"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg></a>
         <span class="logo">MEGA STORE</span>
         <button class="menu-btn" onclick="openDrawer()"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5"/></svg></button>
     </header>
@@ -139,14 +140,17 @@
 
     <main class="main-content">
         <div class="content-wrapper">
-            <div class="news-featured-img" id="featuredImg"><div class="skeleton" style="width:100%;height:100%;"></div></div>
-            <h1 class="news-title" id="newsTitle">Loading...</h1>
-            <div class="news-meta" id="newsDate"></div>
-            <div class="news-content" id="newsContent"></div>
-        </div>
+            <div class="page-header">
+                <h1 class="page-title">News & Updates</h1>
+                <p class="page-subtitle">Stay updated with the latest template releases and platform news</p>
+            </div>
 
-        <div class="section-header" style="max-width:1200px;margin:40px auto 20px;padding:0 16px;"><span class="section-label">More News</span><div class="section-line"></div></div>
-        <div class="news-grid" id="relatedNews"></div>
+            <div class="news-grid" id="newsGrid">
+                <div class="news-card" style="cursor:default;"><div class="skeleton skeleton-img"></div><div class="news-body"><div class="skeleton skeleton-text" style="width:80%;"></div><div class="skeleton skeleton-text" style="width:60%;"></div><div class="skeleton skeleton-text" style="width:40%;"></div></div></div>
+                <div class="news-card" style="cursor:default;"><div class="skeleton skeleton-img"></div><div class="news-body"><div class="skeleton skeleton-text" style="width:80%;"></div><div class="skeleton skeleton-text" style="width:60%;"></div><div class="skeleton skeleton-text" style="width:40%;"></div></div></div>
+                <div class="news-card" style="cursor:default;"><div class="skeleton skeleton-img"></div><div class="news-body"><div class="skeleton skeleton-text" style="width:80%;"></div><div class="skeleton skeleton-text" style="width:60%;"></div><div class="skeleton skeleton-text" style="width:40%;"></div></div></div>
+            </div>
+        </div>
     </main>
 
     <nav class="bottom-nav">
@@ -168,36 +172,25 @@
         function openDrawer() { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('drawer').classList.add('open'); }
         function closeDrawer() { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('drawer').classList.remove('open'); }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const newsId = urlParams.get('id');
-        if (!newsId) window.location.href = 'news.html';
-
         function loadNews() {
-            db.ref('news/' + newsId).once('value').then(snap => {
-                const n = snap.val();
-                if (!n) { window.location.href = 'news.html'; return; }
-                document.title = n.title + ' — Mega Store';
-                document.querySelector('meta[name="description"]').content = (n.description || '').substring(0, 160);
-                if (n.image) { document.getElementById('featuredImg').innerHTML = '<img src="' + n.image + '" alt="' + n.title + '">'; }
-                document.getElementById('newsTitle').textContent = n.title;
-                document.getElementById('newsDate').textContent = formatDate(n.createdAt);
-                const content = linkify(n.description || '');
-                document.getElementById('newsContent').innerHTML = content.split('\n').map(p => p.trim() ? '<p>' + p + '</p>' : '').join('');
-                loadRelated();
-            }).catch(() => window.location.href = 'news.html');
-        }
-        function linkify(text) { if (!text) return ''; return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
-        function formatDate(ts) { if (!ts) return ''; const d = new Date(ts); return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
-
-        function loadRelated() {
-            db.ref('news').once('value').then(snap => {
+            db.ref('news').orderByChild('createdAt').once('value').then(snap => {
                 const data = snap.val() || {};
-                const related = Object.entries(data).filter(([id]) => id !== newsId).map(([id, n]) => ({ ...n, id })).sort(() => Math.random() - 0.5).slice(0, 18);
-                const grid = document.getElementById('relatedNews');
-                if (related.length === 0) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>No more news</p></div>'; return; }
-                grid.innerHTML = related.map(n => '<a href="newsdetails.html?id=' + n.id + '" class="news-card"><div class="news-card-img"><img src="' + (n.image || 'https://via.placeholder.com/600x400?text=No+Image') + '" alt="' + n.title + '" loading="lazy"></div><div class="news-card-body"><h3 class="news-card-title">' + n.title + '</h3></div></a>').join('');
-            });
+                const news = Object.entries(data).map(([id, n]) => ({ ...n, id })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                const grid = document.getElementById('newsGrid');
+                if (news.length === 0) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><svg fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/></svg><h3>No news yet</h3><p>Check back later for updates</p></div>'; return; }
+                grid.innerHTML = news.map(n => `
+                    <a href="newsdetails.html?id=${n.id}" class="news-card">
+                        <div class="news-img-wrap"><img src="${n.image || 'https://via.placeholder.com/600x400?text=No+Image'}" alt="${n.title}" loading="lazy"></div>
+                        <div class="news-body">
+                            <h3 class="news-title">${n.title}</h3>
+                            <p class="news-desc">${(n.description || '').substring(0, 150)}${(n.description || '').length > 150 ? '...' : ''}</p>
+                            <span class="news-date">${formatDate(n.createdAt)}</span>
+                        </div>
+                    </a>
+                `).join('');
+            }).catch(err => { document.getElementById('newsGrid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><h3>Error loading news</h3></div>'; });
         }
+        function formatDate(ts) { if (!ts) return ''; const d = new Date(ts); return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
         document.addEventListener('DOMContentLoaded', loadNews);
     </script>
 </body>
